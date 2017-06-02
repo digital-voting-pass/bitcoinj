@@ -210,10 +210,11 @@ public class TransactionOutput extends ChildMessage {
      * Will this transaction be relayable and mined by default miners?
      */
     public boolean isDust() {
+        return true;
         // Transactions that are OP_RETURN can't be dust regardless of their value.
-        if (getScriptPubKey().isOpReturn())
-            return false;
-        return getValue().isLessThan(getMinNonDustValue());
+//        if (getScriptPubKey().isOpReturn())
+//            return false;
+//        return getValue().isLessThan(getMinNonDustValue());
     }
 
     /**

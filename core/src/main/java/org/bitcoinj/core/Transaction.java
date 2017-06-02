@@ -18,6 +18,7 @@
 package org.bitcoinj.core;
 
 import org.bitcoinj.core.TransactionConfidence.ConfidenceType;
+import org.bitcoinj.crypto.TransactionMultiSignature;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
@@ -900,6 +901,22 @@ public class Transaction extends ChildMessage {
         return new TransactionSignature(key.sign(hash), hashType, anyoneCanPay);
     }
 
+    public TransactionMultiSignature calculateMultiSignature(int inputIndex, ECKey key,
+                                                            byte[] redeemScript,
+                                                            SigHash hashType, boolean anyoneCanPay) {
+        Sha256Hash hash = hashForSignature(inputIndex, redeemScript, hashType, anyoneCanPay);
+        TransactionMultiSignature multiSignature = new TransactionMultiSignature();
+        for (int i = 0; i < 4; i++) {
+            multiSignature.add(
+                    new TransactionSignature(
+                            key.sign(Sha256Hash.wrap(Arrays.copyOfRange(hash.getBytes(), i*8, i*8 + 8))),
+                            hashType,
+                            anyoneCanPay
+                    )
+            );
+        }
+        return multiSignature;
+    }
     /**
      * Calculates a signature that is valid for being inserted into the input at the given position. This is simply
      * a wrapper around calling {@link Transaction#hashForSignature(int, byte[], org.bitcoinj.core.Transaction.SigHash, boolean)}

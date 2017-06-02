@@ -4930,10 +4930,10 @@ public class Wallet extends BaseTaggableObject
             CoinSelection selection = selector.select(valueNeeded, new LinkedList<>(candidates));
             result.bestCoinSelection = selection;
             // Can we afford this?
-            if (selection.valueGathered.compareTo(valueNeeded) < 0) {
-                Coin valueMissing = valueNeeded.subtract(selection.valueGathered);
-                throw new InsufficientMoneyException(valueMissing);
-            }
+//            if (selection.valueGathered.compareTo(valueNeeded) < 0) {
+//                Coin valueMissing = valueNeeded.subtract(selection.valueGathered);
+//                throw new InsufficientMoneyException(valueMissing);
+//            }
             Coin change = selection.valueGathered.subtract(valueNeeded);
             if (change.isGreaterThan(Coin.ZERO)) {
                 // The value of the inputs is greater than what we want to send. Just like in real life then,

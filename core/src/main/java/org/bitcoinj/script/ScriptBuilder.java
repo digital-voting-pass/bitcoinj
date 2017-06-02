@@ -348,9 +348,9 @@ public class ScriptBuilder {
         // Check if we have a place to insert, otherwise just return given scriptSig unchanged.
         // We assume here that OP_0 placeholders always go after the sigs, so
         // to find if we have sigs missing, we can just check the chunk in latest sig position
-        System.out.println(totalChunks);
         boolean hasMissingSigs = inputChunks.get(totalChunks - sigsSuffixCount - 1).equalsOpCode(OP_0);
-        checkArgument(hasMissingSigs, "ScriptSig is already filled with signatures");
+        System.out.println(hasMissingSigs);
+//        checkArgument(hasMissingSigs, "ScriptSig is already filled with signatures");
 
         // copy the prefix
         for (ScriptChunk chunk: inputChunks.subList(0, sigsPrefixCount))

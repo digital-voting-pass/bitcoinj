@@ -96,6 +96,9 @@ public class VersionedChecksummedBytes implements Serializable, Cloneable, Compa
         // A stringified buffer is:
         //   1 byte version + data bytes + 4 bytes check code (a truncated hash)
         byte[] versionBytes = BigInteger.valueOf(this.version).toByteArray();
+        byte[] shiftedVersionBytes = new byte[4];
+        System.arraycopy(versionBytes, 0, shiftedVersionBytes, 4-versionBytes.length, versionBytes.length);
+        versionBytes = shiftedVersionBytes;
         if (this.version < 256) versionBytes = new byte[] {versionBytes[3]};
         byte[] addressBytes = new byte[versionBytes.length + bytes.length + 4];
         for (int i = 0; i < versionBytes.length; i++) {

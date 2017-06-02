@@ -20,6 +20,7 @@ import java.util.EnumSet;
 
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.DeterministicKey;
+import org.bitcoinj.crypto.TransactionMultiSignature;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.Script.VerifyFlag;
@@ -102,8 +103,7 @@ public class LocalTransactionSigner extends StatelessTransactionSigner {
             // a CHECKMULTISIG program for P2SH inputs
             byte[] script = redeemData.redeemScript.getProgram();
             try {
-                TransactionSignature signature = tx.calculateSignature(i, key, script, Transaction.SigHash.ALL, false);
-
+                TransactionMultiSignature signature = tx.calculateMultiSignature(i, key, script, Transaction.SigHash.ALL, false);
                 // at this point we have incomplete inputScript with OP_0 in place of one or more signatures. We already
                 // have calculated the signature using the local key and now need to insert it in the correct place
                 // within inputScript. For pay-to-address and pay-to-key script there is only one signature and it always

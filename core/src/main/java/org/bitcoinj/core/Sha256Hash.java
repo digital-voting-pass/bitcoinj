@@ -39,14 +39,14 @@ public class Sha256Hash implements Serializable, Comparable<Sha256Hash> {
     public static final int LENGTH = 32; // bytes
     public static final Sha256Hash ZERO_HASH = wrap(new byte[LENGTH]);
 
-    private final byte[] bytes;
+    private byte[] bytes;
 
     /**
      * Use {@link #wrap(byte[])} instead.
      */
     @Deprecated
     public Sha256Hash(byte[] rawHashBytes) {
-        checkArgument(rawHashBytes.length == LENGTH);
+        checkArgument(rawHashBytes.length == LENGTH || rawHashBytes.length == LENGTH/4);
         this.bytes = rawHashBytes;
     }
 
