@@ -18,21 +18,18 @@ public class MultiChainParams extends MainNetParams {
      * @param blockHash String containing hash of genesis block
      * @param rawHex String containing hex representation of genesis block raw data
      */
-    public MultiChainParams(String blockHash, String rawHex) {
+    public MultiChainParams(String blockHash, String rawHex, int port, int addressHeader, int addressChecksum, long packetMagic) {
         super();
-
-        port = 6799;
-        packetMagic = 0xf1cbf8eeL;
         maxTarget = new BigInteger("452305946836919597809536725434324863026383426491186282892576025006686863360");
         dnsSeeds = new String[] {""};
         httpSeeds = new HttpDiscovery.Details[] {};
         addrSeeds = new int[] {};
         checkpoints = new HashMap<>();
-        addressHeader = Integer.parseInt("00153310", 16);
-
+        this.port = port;
+        this.addressHeader = addressHeader;
+        this.addressChecksum = addressChecksum;
+        this.packetMagic = packetMagic;
         acceptableAddressCodes = new int[] { addressHeader };
-        addressChecksum = Integer.parseInt("388290ad", 16);
-
 
         // Create a copy of the Multichain network's genesis block and over-write the BitcoinJ created genesis block.
         byte[] payload = Utils.HEX.decode(rawHex);
@@ -60,9 +57,9 @@ public class MultiChainParams extends MainNetParams {
      * @param rawHex String containing hex representation of genesis block raw data
      * @return
      */
-    public static synchronized MultiChainParams get(String blockHash, String rawHex) {
+    public static synchronized MultiChainParams get(String blockHash, String rawHex, int port, int addressHeader, int addressChecksum, long packetMagic) {
         if (instance == null) {
-            instance = new MultiChainParams(blockHash, rawHex);
+            instance = new MultiChainParams(blockHash, rawHex, port, addressHeader, addressChecksum, packetMagic);
         }
         return instance;
     }
