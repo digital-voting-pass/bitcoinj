@@ -182,7 +182,7 @@ public class ScriptTest {
         // pay-to-address
         inputScript = ScriptBuilder.createInputScript(dummySig, key);
         assertThat(inputScript.getChunks().get(0).data, equalTo(dummySig.encodeToBitcoin()));
-        inputScript = ScriptBuilder.createInputScript(null, key);
+        inputScript = ScriptBuilder.createInputScript((TransactionSignature) null, key);
         assertThat(inputScript.getChunks().get(0).opcode, equalTo(OP_0));
         assertThat(inputScript.getChunks().get(1).data, equalTo(key.getPubKey()));
 

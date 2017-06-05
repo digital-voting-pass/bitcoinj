@@ -18,7 +18,7 @@ public class MultiChainParams extends MainNetParams {
      * @param blockHash String containing hash of genesis block
      * @param rawHex String containing hex representation of genesis block raw data
      */
-    public MultiChainParams(String blockHash, String rawHex, int port, int addressHeader, int addressChecksum, long packetMagic) {
+    public MultiChainParams(String blockHash, String rawHex, int port, int addressHeader, long addressChecksum, long packetMagic) {
         super();
         maxTarget = new BigInteger("452305946836919597809536725434324863026383426491186282892576025006686863360");
         dnsSeeds = new String[] {""};
@@ -57,7 +57,7 @@ public class MultiChainParams extends MainNetParams {
      * @param rawHex String containing hex representation of genesis block raw data
      * @return
      */
-    public static synchronized MultiChainParams get(String blockHash, String rawHex, int port, int addressHeader, int addressChecksum, long packetMagic) {
+    public static synchronized MultiChainParams get(String blockHash, String rawHex, int port, int addressHeader, long addressChecksum, long packetMagic) {
         if (instance == null) {
             instance = new MultiChainParams(blockHash, rawHex, port, addressHeader, addressChecksum, packetMagic);
         }

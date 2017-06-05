@@ -797,11 +797,19 @@ public class Transaction extends ChildMessage {
         TransactionInput input = new TransactionInput(params, this, new byte[]{}, prevOut);
         addInput(input);
         Sha256Hash hash = hashForSignature(inputs.size() - 1, scriptPubKey, sigHash, anyoneCanPay);
-        ECKey.ECDSASignature ecSig = sigKey.sign(hash);
-        TransactionSignature txSig = new TransactionSignature(ecSig, sigHash, anyoneCanPay);
-        if (scriptPubKey.isSentToRawPubKey())
-            input.setScriptSig(ScriptBuilder.createInputScript(txSig));
-        else if (scriptPubKey.isSentToAddress())
+
+        TransactionMultiSignature txSig = new TransactionMultiSignature();
+        for (int i = 0; i < 4; i++) {
+            txSig.add(
+                new TransactionSignature(
+                    sigKey.sign(Sha256Hash.wrap(Arrays.copyOfRange(hash.getBytes(), i*8, i*8 + 8))),
+                    sigHash,
+                    anyoneCanPay
+                )
+            );
+        }
+
+        if (scriptPubKey.isSentToAddress())
             input.setScriptSig(ScriptBuilder.createInputScript(txSig, sigKey));
         else
             throw new ScriptException("Don't know how to sign for this kind of scriptPubKey: " + scriptPubKey);

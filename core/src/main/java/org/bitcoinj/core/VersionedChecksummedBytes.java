@@ -36,7 +36,7 @@ import com.google.common.primitives.UnsignedBytes;
  */
 public class VersionedChecksummedBytes implements Serializable, Cloneable, Comparable<VersionedChecksummedBytes> {
     protected final int version;
-    protected int addressChecksum;
+    protected long addressChecksum;
     protected byte[] bytes;
 
     protected VersionedChecksummedBytes(String encoded) throws AddressFormatException {
@@ -69,7 +69,7 @@ public class VersionedChecksummedBytes implements Serializable, Cloneable, Compa
      * @param encoded
      * @param addressChecksum
      */
-    protected VersionedChecksummedBytes(String encoded, int addressChecksum) {
+    protected VersionedChecksummedBytes(String encoded, long addressChecksum) {
         this(encoded);
         this.addressChecksum = addressChecksum;
     }
@@ -81,7 +81,7 @@ public class VersionedChecksummedBytes implements Serializable, Cloneable, Compa
         this.bytes = bytes;
     }
 
-    protected VersionedChecksummedBytes(int version, int addressChecksum, byte[] bytes) {
+    protected VersionedChecksummedBytes(int version, long addressChecksum, byte[] bytes) {
         checkArgument(version >= 0 && version < Integer.MAX_VALUE);
         this.version = version;
         this.addressChecksum = addressChecksum;

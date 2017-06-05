@@ -66,11 +66,14 @@ public class SendRequest {
             return;
         }
 
-        // Figure out which network we should connect to. Each one gets its own set of files.
 
         final NetworkParameters params = MultiChainParams.get(
-                "00ea493df401cee6694c68a35d2b50dbdd197bd630cc2a95875933e16b7d0590",
-                "010000000000000000000000000000000000000000000000000000000000000000000000b59757b81c569f8b3854d83fe1b09b9a69a7b6ea1c33863a2a1640ee865ce1dc0f373059ffff0020a70100000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff1704ffff002001040f4d756c7469436861696e20766f7465ffffffff0200000000000000002f76a914a18876083c6b7e3a76b0549dcd49cadf7222a05788ac1473706b703731000000000000ffffffff0f373059750000000000000000131073706b6e0200040101000104726f6f74756a00000000"
+                "00d7fa1a62c5f1eadd434b9f7a8a657a42bd895f160511af6de2d2cd690319b8",
+                "01000000000000000000000000000000000000000000000000000000000000000000000059c075b5dd26a328e185333ce1464b7279d476fbe901c38a003e694906e01c073b633559ffff0020ae0000000101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff1704ffff002001040f4d756c7469436861696e20766f7465ffffffff0200000000000000002f76a91474f585ec0e5f452a80af1e059b9d5079ec501d5588ac1473706b703731000000000000ffffffff3b633559750000000000000000131073706b6e0200040101000104726f6f74756a00000000",
+                6799,
+                Integer.parseInt("00628fed", 16),
+                0xcc350cafL,
+                0xf5dec1feL
         );
 
         String filePrefix = "voting-wallet";
@@ -96,17 +99,15 @@ public class SendRequest {
         kit.startAsync();
         kit.awaitRunning();
 
-//        daan@daan-XPS13-9333:~/Workspace/digital-voting-pass-util$ python create_keypair.py
-//        Address: 14cdEY69ZCVCTtgebDPyqTWkAoS7SUm8fVdboh
-//        Public: 1245d042e6ceb528e8185dbd93c558193d415aef2045f894685ae097a29f65e9ea9c751fda5d6dd7cc130e79caae4fe3116850b11787fbae468ec34124105c2a194ee950b26a83f2dcb310d0a17bb6fe
-//        Private: af484d3743489f94de599b14d41eac656bae9a08a3a64c129104385717c861c53ce664c05038efd6
-//        daan@daan-XPS13-9333:~/Workspace/digital-voting-pass-util$ python create_keypair.py
-//        Address: 1iRbvVenrmw1SjHPTL1AviuRTJUac9iwi4HEv
-//        Public: 6c79ceeb43b2b4d36bcdb82a6be2221798b292b109e597c7ec94ef7bf3aa2995310a9853642c768e03558a4d823e5ac31d262790c567917fcd902b9b748869e1d6dc169ed46fe2afa3ddcabcdac0ab59
-//        Private: 313c37fb421297b9f81d3cd59a227ad9b2c3ceb1cedc4c30dfcf126f227dfa76766ffa04eca290ad
+        byte[] bytes2 = new BigInteger("af484d3743489f94de599b14d41eac656bae9a08a3a64c129104385717c861c53ce664c05038efd6", 16).toByteArray();
 
+        if (bytes2[0] == 0) {
+            byte[] tmp = new byte[bytes2.length - 1];
+            System.arraycopy(bytes2, 1, tmp, 0, tmp.length);
+            bytes2 = tmp;
+        }
 
-        ECKey passportKey = ECKey.fromPrivate(new BigInteger("af484d3743489f94de599b14d41eac656bae9a08a3a64c129104385717c861c53ce664c05038efd6", 16));
+        ECKey passportKey = ECKey.fromPrivate(bytes2);
         Address from = Address.fromBase58(params, "14cdEY69ZCVCTtgebDPyqTWkAoS7SUm8fVdboh");
         Address to   = Address.fromBase58(params, "1iRbvVenrmw1SjHPTL1AviuRTJUac9iwi4HEv");
 
@@ -125,7 +126,7 @@ public class SendRequest {
             System.out.println(asset);
         }
 
-        AssetBalance balance = kit.wallet().getAssetBalance(assets.get(1), from);
+        AssetBalance balance = kit.wallet().getAssetBalance(assets.get(0), from);
 
 
         Transaction transaction = new Transaction(params);
@@ -150,9 +151,6 @@ public class SendRequest {
 
         transaction.addOutput(output);
         transaction.addSignedInput(original, passportKey);
-
-        TransactionSigner.ProposedTransaction proposal = new TransactionSigner.ProposedTransaction(transaction);
-        TransactionSigner signer = new LocalTransactionSigner();
 
         Wallet.SendResult result = new Wallet.SendResult();
         result.tx = transaction;

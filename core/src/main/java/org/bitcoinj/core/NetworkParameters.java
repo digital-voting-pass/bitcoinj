@@ -75,7 +75,7 @@ public abstract class NetworkParameters {
     protected int port;
     protected long packetMagic;  // Indicates message origin network and is used to seek to the next message when stream state is unknown.
     protected int addressHeader;
-    protected int addressChecksum;
+    protected long addressChecksum;
     protected int p2shHeader;
     protected int dumpedPrivateKeyHeader;
     protected int interval;
@@ -326,7 +326,7 @@ public abstract class NetworkParameters {
         return addressHeader;
     }
 
-    public int getAddressChecksum() {
+    public long getAddressChecksum() {
         return addressChecksum;
     }
 

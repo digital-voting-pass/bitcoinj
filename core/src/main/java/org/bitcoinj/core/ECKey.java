@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import com.google.common.primitives.Ints;
 import com.google.common.primitives.UnsignedBytes;
 import org.bitcoin.NativeSecp256k1;
 import org.bitcoin.NativeSecp256k1Util;
@@ -46,7 +45,6 @@ import org.spongycastle.math.ec.ECCurve;
 import org.spongycastle.math.ec.ECPoint;
 import org.spongycastle.math.ec.FixedPointCombMultiplier;
 import org.spongycastle.math.ec.FixedPointUtil;
-import org.spongycastle.math.ec.custom.sec.SecP256K1Curve;
 import org.spongycastle.util.encoders.Base64;
 import org.spongycastle.util.encoders.Hex;
 
@@ -272,6 +270,7 @@ public class ECKey implements EncryptableItem {
      */
     public static ECKey fromPrivate(BigInteger privKey, boolean compressed) {
         ECPoint point = publicPointFromPrivate(privKey);
+
         return new ECKey(privKey, getPointWithCompression(point, compressed));
     }
 
@@ -588,6 +587,31 @@ public class ECKey implements EncryptableItem {
             } catch (IOException e) {
                 throw new RuntimeException(e);  // Cannot happen.
             }
+        }
+
+        /**
+         * Export to formate used by multichain
+         * @return
+         */
+        public byte[] encodeToString() {
+            byte[] r = numberToString(this.r);
+            byte[] s = numberToString(this.s);
+            byte[] result = new byte[r.length + s.length];
+            System.arraycopy(r, 0, result, 0, r.length);
+            System.arraycopy(s, 0, result, r.length, s.length);
+            return result;
+        }
+
+        private byte[] numberToString(BigInteger number) {
+            byte[] bytes = number.toByteArray();
+            if (bytes[0] == 0) {
+                byte[] tmp = new byte[bytes.length - 1];
+                System.arraycopy(bytes, 1, tmp, 0, tmp.length);
+                bytes = tmp;
+            }
+            byte[] result = new byte[40];
+            System.arraycopy(bytes, 0, result, 40-bytes.length, bytes.length);
+            return result;
         }
 
         public static ECDSASignature decodeFromDER(byte[] bytes) {

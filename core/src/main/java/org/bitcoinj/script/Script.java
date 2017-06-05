@@ -457,7 +457,7 @@ public class Script {
     public Script createEmptyInputScript(@Nullable ECKey key, @Nullable Script redeemScript) {
         if (isSentToAddress()) {
             checkArgument(key != null, "Key required to create pay-to-address input script");
-            return ScriptBuilder.createInputScript(null, key);
+            return ScriptBuilder.createInputScript((TransactionSignature) null, key);
         } else if (isSentToRawPubKey()) {
             return ScriptBuilder.createInputScript(null);
         } else if (isPayToScriptHash()) {

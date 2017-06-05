@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Utils;
+import org.bitcoinj.crypto.TransactionMultiSignature;
 import org.bitcoinj.crypto.TransactionSignature;
 
 import javax.annotation.Nullable;
@@ -245,6 +246,16 @@ public class ScriptBuilder {
      * If given signature is null, incomplete scriptSig will be created with OP_0 instead of signature
      */
     public static Script createInputScript(@Nullable TransactionSignature signature, ECKey pubKey) {
+        byte[] pubkeyBytes = pubKey.getPubKey();
+        byte[] sigBytes = signature != null ? signature.encodeToBitcoin() : new byte[]{};
+        return new ScriptBuilder().data(sigBytes).data(pubkeyBytes).build();
+    }
+
+    /**
+     * Creates a scriptSig that can redeem a pay-to-address output.
+     * If given signature is null, incomplete scriptSig will be created with OP_0 instead of signature
+     */
+    public static Script createInputScript(@Nullable TransactionMultiSignature signature, ECKey pubKey) {
         byte[] pubkeyBytes = pubKey.getPubKey();
         byte[] sigBytes = signature != null ? signature.encodeToBitcoin() : new byte[]{};
         return new ScriptBuilder().data(sigBytes).data(pubkeyBytes).build();
