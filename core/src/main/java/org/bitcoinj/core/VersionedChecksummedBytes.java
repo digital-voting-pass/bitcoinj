@@ -24,6 +24,7 @@ import java.util.Arrays;
 
 import com.google.common.base.Objects;
 import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
 import com.google.common.primitives.UnsignedBytes;
 
 /**
@@ -107,7 +108,9 @@ public class VersionedChecksummedBytes implements Serializable, Cloneable, Compa
         }
 
         byte[] checksum = Sha256Hash.hashTwice(addressBytes, 0, bytes.length + 4);
-        byte[] addressChecksum = BigInteger.valueOf(this.addressChecksum).toByteArray();
+        byte[] addressChecksumLong = Longs.toByteArray(this.addressChecksum);
+        byte[] addressChecksum = new byte[4];
+        System.arraycopy(addressChecksumLong, 4, addressChecksum, 0, 4);
         for (int i = 0; i < 4; i++) {
             checksum[i] = (byte) (checksum[i] ^ addressChecksum[i]);
         }
