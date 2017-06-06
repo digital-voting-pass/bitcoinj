@@ -116,6 +116,9 @@ public class BitcoinSerializer extends MessageSerializer {
     public void serialize(Message message, OutputStream out) throws IOException {
         String name = names.get(message.getClass());
         if (name == null) {
+            name = names.get(message.getClass().getSuperclass());
+        }
+        if (name == null) {
             throw new Error("BitcoinSerializer doesn't currently know how to serialize " + message.getClass());
         }
         serialize(name, message.bitcoinSerialize(), out);
