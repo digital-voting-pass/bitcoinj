@@ -20,7 +20,7 @@ public class Asset {
         this.name = name;
 
         // Assets are identified by the first 16 bytes of asset’s first issuance txid in reverse order.
-        id = issuanceTxId.toBigInteger().toByteArray();
+        id = issuanceTxId.getBytes();
         id = Arrays.copyOfRange(id, 0, 16);
         reverse(id);
     }
