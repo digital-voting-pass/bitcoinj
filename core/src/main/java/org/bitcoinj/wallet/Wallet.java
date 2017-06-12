@@ -79,6 +79,9 @@ import org.spongycastle.crypto.params.*;
 import javax.annotation.*;
 import java.io.*;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.security.PublicKey;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -3595,6 +3598,61 @@ public class Wallet extends BaseTaggableObject
         } finally {
             lock.unlock();
         }
+    }
+
+    /**
+     * Return transactions that involve the given address, either incomming or outgoing.
+     * @param assetFilter Asset for which transactions needs to be checked.
+     * @return List containing interesting transactions.
+     */
+    public List<Transaction> getAssetTransactions(Address address, Asset assetFilter) {
+        List<Transaction> result = new ArrayList<>();
+        Set<Transaction> ts = getTransactions(false);
+        for (Transaction transaction : ts) {
+            if (!transaction.isCoinBase()){
+                for (TransactionOutput o : transaction.getOutputs()) {
+                    boolean sentToAddr = o.getScriptPubKey().isSentToAddress();
+                    boolean isReturn = o.getScriptPubKey().isOpReturn();
+                    if (sentToAddr && !isReturn) {
+                        byte[] metaData = o.getScriptPubKey().getChunks().get(5).data;
+                        if (isAssetTransaction(transaction, assetFilter, metaData)) {
+                            // Transaction is correct asset
+                            Address toAddress = o.getScriptPubKey().getToAddress(this.params);
+
+                            if (isSentByAddress(transaction, address)) // Transaction is outgoing
+                                result.add(transaction);
+
+                            if (toAddress.equals(address)) {
+                                result.add(transaction);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Return whether this transaction was sent by given address
+     * @param transaction Transaction
+     * @param myAddress String
+     */
+    private boolean isSentByAddress(Transaction transaction, Address myAddress){
+        for (TransactionInput in : transaction.getInputs()) {
+            Address fromAddress = in.getScriptSig().getFromAddress(params);
+            if (myAddress.equals(fromAddress)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isAssetTransaction(Transaction t, Asset assetFilter, byte[] metaData) {
+        byte[] identifier = Arrays.copyOfRange(metaData, 0, 4);
+        byte[] asset = Arrays.copyOfRange(metaData, 4, 20);
+        return Arrays.equals(identifier, (new BigInteger("73706b71", 16)).toByteArray())
+                && Arrays.equals(asset, assetFilter.getId());
     }
 
     private static class BalanceFutureRequest {
